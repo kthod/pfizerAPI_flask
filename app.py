@@ -1,16 +1,16 @@
 from flask import Flask, request, jsonify
 import os
 import numpy as np
-from typing import List, Dict, Any
+#from typing import List, Dict, Any
 import logging
 from CompressedVQE_Class import CompressedVQE
 from Create_QUBO import create_qubo_matrix
 from Environment import Environment
 from GoogleOR import Google_OR
-import qiskit
-import matplotlib.pyplot as plt
-import io
-import base64
+    # import qiskit
+    # import matplotlib.pyplot as plt
+    # import io
+    # import base64
 
 # Set up logging
 logging.basicConfig(
@@ -208,6 +208,9 @@ def health_check():
 if __name__ == '__main__':
     # Get port from environment variable (AWS EB sets this)
     port = int(os.environ.get('PORT', 5000))
+    
     # In production, we don't want debug mode
     debug = os.environ.get('FLASK_ENV') == 'development'
+    
+    # Run the Flask app
     app.run(host='0.0.0.0', port=port, debug=debug) 

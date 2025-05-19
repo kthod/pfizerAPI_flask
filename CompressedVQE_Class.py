@@ -3,7 +3,7 @@ from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 from optimizationAlgorithm import optimizationAlgorithm
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 class CompressedVQE(optimizationAlgorithm):
     """
@@ -92,93 +92,93 @@ class CompressedVQE(optimizationAlgorithm):
         #qc.save_statevector()
         return qc
 
-    def get_solution_distribution(self,normalization =[], label = "", marker = '*', solutions=10, shots=10000):
-        """
-        Samples solutions from the quantum circuit and visualizes the distribution of solution qualities 
-        in terms of their cost values. This method helps in understanding the variability and quality of 
-        solutions that the Compressed VQE algorithm can generate.
+    # def get_solution_distribution(self,normalization =[], label = "", marker = '*', solutions=10, shots=10000):
+    #     """
+    #     Samples solutions from the quantum circuit and visualizes the distribution of solution qualities 
+    #     in terms of their cost values. This method helps in understanding the variability and quality of 
+    #     solutions that the Compressed VQE algorithm can generate.
 
-        Parameters:
-        - solutions (int, optional): The number of solutions to sample in each optimization experiment. 
-                                    Defaults to 10.
-        - shots (int, optional): The number of measurement shots for each execution of the quantum circuit. 
-                                Defaults to 10000.
+    #     Parameters:
+    #     - solutions (int, optional): The number of solutions to sample in each optimization experiment. 
+    #                                 Defaults to 10.
+    #     - shots (int, optional): The number of measurement shots for each execution of the quantum circuit. 
+    #                             Defaults to 10000.
 
-        This method executes the quantum circuit multiple times with the optimal parameters to sample 
-        different solutions. For each sampled solution, it calculates the corresponding cost using the 
-        QUBO matrix. Then, it visualizes the distribution of these costs across different optimization 
-        experiments to provide insights into the algorithm's performance.
+    #     This method executes the quantum circuit multiple times with the optimal parameters to sample 
+    #     different solutions. For each sampled solution, it calculates the corresponding cost using the 
+    #     QUBO matrix. Then, it visualizes the distribution of these costs across different optimization 
+    #     experiments to provide insights into the algorithm's performance.
 
-        The visualization is created as a scatter plot, where each point represents a sampled solution, 
-        with its cost on one axis and the optimization run it belongs to on another. The color of each point 
-        reflects the frequency of each cost value being observed, providing a visual representation of the 
-        solution quality distribution.
+    #     The visualization is created as a scatter plot, where each point represents a sampled solution, 
+    #     with its cost on one axis and the optimization run it belongs to on another. The color of each point 
+    #     reflects the frequency of each cost value being observed, providing a visual representation of the 
+    #     solution quality distribution.
 
-        Returns:
-        - matplotlib.collections.PathCollection: The scatter plot object showing the distribution of solution 
-                                                qualities across optimization runs.
+    #     Returns:
+    #     - matplotlib.collections.PathCollection: The scatter plot object showing the distribution of solution 
+    #                                             qualities across optimization runs.
         
-        Note:
-        - This method assumes that the optimization process has been completed, and optimal parameters for 
-        the quantum circuit are available in `self.x_vec`.
-        - The visualization can be particularly useful for analyzing the effectiveness and reliability of the 
-        Compressed VQE algorithm in finding good solutions to the QUBO problem.
-        """
-        optimization_runs = []  # Tracks which optimization run each solution belongs to
-        cost_fun = []  # Stores the cost function values of sampled solutions
-        fraction = []  # Stores the fraction of times each solution was observed
-        vmin = normalization[0]
+    #     Note:
+    #     - This method assumes that the optimization process has been completed, and optimal parameters for 
+    #     the quantum circuit are available in `self.x_vec`.
+    #     - The visualization can be particularly useful for analyzing the effectiveness and reliability of the 
+    #     Compressed VQE algorithm in finding good solutions to the QUBO problem.
+    #     """
+    #     optimization_runs = []  # Tracks which optimization run each solution belongs to
+    #     cost_fun = []  # Stores the cost function values of sampled solutions
+    #     fraction = []  # Stores the fraction of times each solution was observed
+    #     vmin = normalization[0]
 
-        if label == "":
-            label = self.algorithm
-        # Define an inner function to sample solutions and calculate their costs
-        def sample_solutions(params, run, solutions=50):
-            nonlocal cost_fun, fraction, optimization_runs
-            temp_cost_fun = []  # Temporary storage for this sampling
-            temp_fraction = []  # Temporary storage for fractions in this sampling
-            temp_optimization_runs = []  # Temporary storage for optimization run tracking
+    #     if label == "":
+    #         label = self.algorithm
+    #     # Define an inner function to sample solutions and calculate their costs
+    #     def sample_solutions(params, run, solutions=50):
+    #         nonlocal cost_fun, fraction, optimization_runs
+    #         temp_cost_fun = []  # Temporary storage for this sampling
+    #         temp_fraction = []  # Temporary storage for fractions in this sampling
+    #         temp_optimization_runs = []  # Temporary storage for optimization run tracking
             
-            # Execute the circuit with given parameters and sample solutions
-            vqa_circ = self.circuit(params)
-            for _ in range(solutions):
-                job = execute(vqa_circ, Aer.get_backend('qasm_simulator'), noise_model=self.noise_model, shots=shots, max_parallel_threads=1)
-                count = job.result().get_counts(vqa_circ)
-                probabilities = self.calculate_probabilities(count)
+    #         # Execute the circuit with given parameters and sample solutions
+    #         vqa_circ = self.circuit(params)
+    #         for _ in range(solutions):
+    #             job = execute(vqa_circ, Aer.get_backend('qasm_simulator'), noise_model=self.noise_model, shots=shots, max_parallel_threads=1)
+    #             count = job.result().get_counts(vqa_circ)
+    #             probabilities = self.calculate_probabilities(count)
                 
-                # Reconstruct the solution bitstring from the most probable ancilla configurations
-                sol = ""
-                for i in range(len(probabilities)):
-                    ind = np.argmax(probabilities[i,:])
-                    ancilla = f'{ind:0{self.na}b}'
-                    sol += ancilla
+    #             # Reconstruct the solution bitstring from the most probable ancilla configurations
+    #             sol = ""
+    #             for i in range(len(probabilities)):
+    #                 ind = np.argmax(probabilities[i,:])
+    #                 ancilla = f'{ind:0{self.na}b}'
+    #                 sol += ancilla
                 
-                bitstring = np.array([int(x) for x in sol])
-                cost = bitstring.T @ self.qubo_matrix @ bitstring -vmin
+    #             bitstring = np.array([int(x) for x in sol])
+    #             cost = bitstring.T @ self.qubo_matrix @ bitstring -vmin
                 
-                # Update the distributions
-                if cost in temp_cost_fun:
-                    ind = temp_cost_fun.index(cost)
-                    temp_fraction[ind] += 1
-                else:
-                    temp_cost_fun.append(cost )
-                    temp_fraction.append(1)
-                    temp_optimization_runs.append(run)
+    #             # Update the distributions
+    #             if cost in temp_cost_fun:
+    #                 ind = temp_cost_fun.index(cost)
+    #                 temp_fraction[ind] += 1
+    #             else:
+    #                 temp_cost_fun.append(cost )
+    #                 temp_fraction.append(1)
+    #                 temp_optimization_runs.append(run)
                 
-            cost_fun.extend(temp_cost_fun)
-            fraction.extend(temp_fraction)
-            optimization_runs.extend(temp_optimization_runs)
+    #         cost_fun.extend(temp_cost_fun)
+    #         fraction.extend(temp_fraction)
+    #         optimization_runs.extend(temp_optimization_runs)
 
-        # Sample solutions across all optimization experiments
-        for run in range(1, self.number_of_experiments + 1):
-            sample_solutions(self.x_vec[run - 1], run, solutions)
+    #     # Sample solutions across all optimization experiments
+    #     for run in range(1, self.number_of_experiments + 1):
+    #         sample_solutions(self.x_vec[run - 1], run, solutions)
         
-        fractions = [element / solutions for element in fraction]  # Normalize fractions
+    #     fractions = [element / solutions for element in fraction]  # Normalize fractions
 
-        # Visualize the solution distribution
-        scatter = plt.scatter(cost_fun, optimization_runs, c=fractions, cmap='viridis', marker=marker, label=label)
-        # Additional plot formatting can be added here
+    #     # Visualize the solution distribution
+    #     scatter = plt.scatter(cost_fun, optimization_runs, c=fractions, cmap='viridis', marker=marker, label=label)
+    #     # Additional plot formatting can be added here
 
-        return scatter
+    #     return scatter
 
 
 
@@ -227,7 +227,7 @@ class CompressedVQE(optimizationAlgorithm):
         # Get the counts (measurement results)
         count = job.result().get_counts()
         print(count)
-        plot_histogram(count)
+        #plot_histogram(count)
         # Calculate probabilities for each possible ancilla configuration
         probabilities = self.calculate_probabilities(count)
         
@@ -372,35 +372,35 @@ class CompressedVQE(optimizationAlgorithm):
         return np.sum(P * self.qubo_matrix)
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     
-    a = 4*[2,2,2,2]
-    S=6
-    def get_qubomat(a,S):
-    # Adjacency is essentially a matrix which tells you which nodes are connected.
-        matrix = np.zeros((len(a),len(a)))
-        nvar = len(matrix)
+#     a = 4*[2,2,2,2]
+#     S=6
+#     def get_qubomat(a,S):
+#     # Adjacency is essentially a matrix which tells you which nodes are connected.
+#         matrix = np.zeros((len(a),len(a)))
+#         nvar = len(matrix)
 
-        for j in range(len(a)):
-            for i in range(j,len(a)):
-                if i == j:
-                    matrix[i][i] = (a[i]**2) - 2*S*a[i]
-                else:
+#         for j in range(len(a)):
+#             for i in range(j,len(a)):
+#                 if i == j:
+#                     matrix[i][i] = (a[i]**2) - 2*S*a[i]
+#                 else:
                     
-                    # matrix[j][i] = 2 * a[i] * a[j]
-                    if i % 2 == 0:
+#                     # matrix[j][i] = 2 * a[i] * a[j]
+#                     if i % 2 == 0:
 
-                        matrix[i][j] = 2*a[i]*a[j]
-                    else:
-                        matrix[j][i] = 2*a[i]*a[j]
+#                         matrix[i][j] = 2*a[i]*a[j]
+#                     else:
+#                         matrix[j][i] = 2*a[i]*a[j]
                     
-        return matrix
-    # inst = Quantum_MPC(epsilon=epsilon, de=de, C=C, Horizon=Horizon, DT=DT, layers=2)
-    Q= get_qubomat(a,S)
+#         return matrix
+#     # inst = Quantum_MPC(epsilon=epsilon, de=de, C=C, Horizon=Horizon, DT=DT, layers=2)
+#     Q= get_qubomat(a,S)
 
-    solver = CompressedVQE(qubo_matrix=Q, layers=2,na = 1)
-    #print(solver.compute_expectation({'110': 7826, '101': 2166}))
-    solver.optimize(n_measurements=1000, maxiter=200,number_of_experiments=5)
-    solver.show_solution(shots=1000)
-    plt.show()
+#     solver = CompressedVQE(qubo_matrix=Q, layers=2,na = 1)
+#     #print(solver.compute_expectation({'110': 7826, '101': 2166}))
+#     solver.optimize(n_measurements=1000, maxiter=200,number_of_experiments=5)
+#     solver.show_solution(shots=1000)
+#     plt.show()

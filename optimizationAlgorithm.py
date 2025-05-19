@@ -4,7 +4,7 @@ from qiskit_aer.noise import NoiseModel, ReadoutError
 from qiskit_aer.noise.errors import thermal_relaxation_error, depolarizing_error, QuantumError
 #from qiskit.providers.aer.noise import NoiseModel, thermal_relaxation_error, depolarizing_error, ReadoutError, QuantumError
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from abc import ABC, abstractclassmethod
 import time
 from scipy.optimize import minimize
@@ -142,8 +142,8 @@ class optimizationAlgorithm(ABC):
         lower_bound = [np.min(measurements[:, i]) for i in range(maxiter)]
         mean = [np.mean(measurements[:, i]) for i in range(maxiter)]
 
-        plt.fill_between(range(maxiter), upper_bound, lower_bound, color = color,alpha=0.5)
-        plt.plot(range(maxiter), mean, linestyle='--', color = color,label=label)
+        # plt.fill_between(range(maxiter), upper_bound, lower_bound, color = color,alpha=0.5)
+        # plt.plot(range(maxiter), mean, linestyle='--', color = color,label=label)
 
         return upper_bound, lower_bound, mean
         # plt.xlabel('Iteration')
